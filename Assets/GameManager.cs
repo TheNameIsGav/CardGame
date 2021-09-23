@@ -98,13 +98,20 @@ public class GameManager : MonoBehaviour
     {
         private SuitEnum suit;
         private int rank;
-        private Sprite front;
-        private Sprite back;
+        public Sprite front;
+        public Sprite back;
+
+        private float x, y, z;
 
         public bool isBack = true;
+        public int timer;
 
         public SuitEnum Suit { get { return suit; } }
         public int Rank { get { return rank; } }
+
+        public GameObject GetCard { get { return card; } }
+
+        public Vector3 Pos { get { return new Vector3(x, y, z); } }
 
         private GameObject card;
 
@@ -124,23 +131,6 @@ public class GameManager : MonoBehaviour
 
             
 
-        }
-
-        public void flipCard()
-        {
-            if (isBack)
-            {
-                isBack = false;
-                for(int i = 0; i < 180; i++)
-                {
-                    //Wait for .1 seconds
-                    //Change rotation
-                    //At 90 degrees, change image
-                }
-            } else
-            {
-                isBack = true;
-            }
         }
     }
 
@@ -168,6 +158,46 @@ public class GameManager : MonoBehaviour
     public void SpawnDeck(Vector2 posToSpawn)
     {
         gameDeck = new Deck(posToSpawn);
+    }
+
+    /// <summary>
+    /// Call this function to flip a card, I.E. run the animation
+    /// </summary>
+    /// <param name="card"></param>
+    public void StartFlip(Card card)
+    {
+        StartCoroutine(CalculateFlip(card));
+    }
+
+    public void flipCard(Card card)
+    {
+        if (card.isBack)
+        {
+            card.isBack = false;
+            card.GetCard.transform.gameObject.GetComponent<SpriteRenderer>().sprite = card.front;
+        }
+        else
+        {
+            card.isBack = true;
+            card.GetCard.transform.gameObject.GetComponent<SpriteRenderer>().sprite = card.back;
+        }
+    }
+
+    IEnumerator CalculateFlip(Card card)
+    {
+        int timer = 0;
+        for (int i = 0; i < 180; i++)
+        {
+            yield return new WaitForSeconds(0.01f);
+            card.GetCard.transform.Rotate(card.Pos);
+            timer++;
+
+            if (timer == 90 || timer == -90)
+            {
+                flipCard(card);
+            }
+        }
+        timer = 0;
     }
 
 
