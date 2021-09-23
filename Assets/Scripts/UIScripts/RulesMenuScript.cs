@@ -16,8 +16,9 @@ public class RulesMenuScript : MonoBehaviour
         
     }
 
-    void ReturnToMainMenu()
+    public void ReturnToMainMenu()
     {
+        Debug.Log("returning to main menu");
         GameManager.instance.ReturnToMainMenu();
     }
 }
