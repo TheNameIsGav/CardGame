@@ -17,10 +17,11 @@ public class GameManager : MonoBehaviour
    
 
     public static GameManager instance;
+    public static GameObject grabbedCard;
 
     private static System.Random rng = new System.Random();
     private Deck gameDeck;
-    private List<Card> hand;
+    private Deck boardDeck = new Deck();
 
     public static void Shuffle<T>(List<T> inc)
     {
@@ -39,12 +40,11 @@ public class GameManager : MonoBehaviour
 
     public class Deck
     {
-        private List<Card> deck = new List<Card>();
+        public List<Card> deck = new List<Card>();
 
         public Deck()
         {
-            GenerateDeck(new Vector2());
-            Shuffle();
+
         }
 
         public Deck(Vector2 inc)
@@ -100,26 +100,23 @@ public class GameManager : MonoBehaviour
         private int rank;
         public Sprite front;
         public Sprite back;
+        public bool inDeck = false;
 
         private float x, y, z;
 
-        public bool isBack = true;
-        public int timer;
+        public GameObject card;
 
         public SuitEnum Suit { get { return suit; } }
         public int Rank { get { return rank; } }
 
-        public GameObject GetCard { get { return card; } }
-
         public Vector3 Pos { get { return new Vector3(x, y, z); } }
 
-        private GameObject card;
+        
 
         public Card(SuitEnum rsuit, int rrank, Vector2 position)
         {
             string cardName = string.Format("{1} of {0}", rsuit, rrank);
             string assetName = string.Format("Cards/{0}/card_{0}_{1}", rsuit, rrank);
-            Debug.Log(assetName);
             GameObject asset = GameObject.Find("CardTemplate");
 
             card = Instantiate(asset, position, Quaternion.identity);
@@ -128,9 +125,29 @@ public class GameManager : MonoBehaviour
             suit = rsuit;
             rank = rrank;
             card.name = cardName;
+            card.GetComponent<SpriteRenderer>().sprite = front;
+            card.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = back;
 
-            
+            card.transform.rotation = new Quaternion(0, 180, 0, 0);
+            card.GetComponent<BoxCollider2D>().enabled = false;
+        }
 
+        public Card(Card incCard)
+        {
+            suit = incCard.suit;
+            rank = incCard.rank;
+            front = incCard.front;
+            back = incCard.back;
+            inDeck = incCard.inDeck;
+
+            x = incCard.x;
+            y = incCard.y;
+            z = incCard.z;
+
+            card = incCard.card;
+            card.GetComponent<SpriteRenderer>().sprite = incCard.front;
+            card.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = incCard.back;
+            card.GetComponent<BoxCollider2D>().enabled = incCard.card.GetComponent<BoxCollider2D>().enabled;
         }
     }
 
@@ -151,10 +168,21 @@ public class GameManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    { 
-    
+    {
+        
     }
 
+    public void DealCard()
+    {
+        Card selected = gameDeck.deck[0];
+        selected.card.GetComponent<BoxCollider2D>().enabled = true;
+        boardDeck.deck.Add(new Card(selected));
+        gameDeck.deck.RemoveAt(0);
+        selected.inDeck = false;
+        selected.card.transform.position = GameObject.Find("FlipPoint").transform.position;
+        StartFlip(selected);
+    }
+    
     public void SpawnDeck(Vector2 posToSpawn)
     {
         gameDeck = new Deck(posToSpawn);
@@ -166,41 +194,34 @@ public class GameManager : MonoBehaviour
     /// <param name="card"></param>
     public void StartFlip(Card card)
     {
-        StartCoroutine(CalculateFlip(card));
+        StartCoroutine(RotateCard(card));
     }
 
-    public void flipCard(Card card)
+    private IEnumerator RotateCard(Card card)
     {
-        if (card.isBack)
+        WaitForSeconds wait = new WaitForSeconds(.0025f);
+        for(int i = 0; i < 180; i++)
         {
-            card.isBack = false;
-            card.GetCard.transform.gameObject.GetComponent<SpriteRenderer>().sprite = card.front;
-        }
-        else
-        {
-            card.isBack = true;
-            card.GetCard.transform.gameObject.GetComponent<SpriteRenderer>().sprite = card.back;
+            card.card.transform.Rotate(Vector3.up);
+            yield return wait;
         }
     }
 
-    IEnumerator CalculateFlip(Card card)
+    public void setGrabbedCard(GameObject card)
     {
-        int timer = 0;
-        for (int i = 0; i < 180; i++)
-        {
-            yield return new WaitForSeconds(0.01f);
-            card.GetCard.transform.Rotate(card.Pos);
-            timer++;
+        grabbedCard = card;
+    }
 
-            if (timer == 90 || timer == -90)
-            {
-                flipCard(card);
-            }
-        }
-        timer = 0;
+    public void removeGrabbedCard()
+    {
+        grabbedCard = null;
     }
 
 
+    private void FixedUpdate()
+    {
+        
+    }
 
     //UI Methods
     public void UpdateCardBack(Sprite inc)
