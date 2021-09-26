@@ -201,13 +201,19 @@ public class GameManager : MonoBehaviour
     {
         //Range from -15 to 15
         //Want to decrease the distance per each card in the 
-        float distBetween = 30 / (boardDeck.deck.Count == 0 ? 1 : boardDeck.deck.Count); //Don't ask why this is here
+        float distBetween = Math.Max(30 / (boardDeck.deck.Count == 0 ? 1 : boardDeck.deck.Count), 1); //Don't ask why this is here
         for(int i = 0; i < boardDeck.deck.Count; i++)
         {
             GameObject curr = boardDeck.deck[i].card;
             Vector3 pos = curr.transform.position;
-
-            curr.transform.position = new Vector3(distBetween * i - 15, -3, -.01f * i);
+            if(i > 30)
+            {
+                curr.transform.position = new Vector3(distBetween * i - 45, 1, -.01f * i);
+            } else
+            {
+                curr.transform.position = new Vector3(distBetween * i - 15, -5, -.01f * i);
+            }
+            
             curr.transform.gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1); ;
         }
     }
@@ -284,7 +290,7 @@ public class GameManager : MonoBehaviour
 
     private void CheckGameLogic(GameObject a, GameObject b)
     {
-        if (drawDeck.deck.Count == 0 || boardDeck.deck.Count == 1)
+        if (drawDeck.deck.Count == 0 && boardDeck.deck.Count == 1)
         {
             playing = false;
             SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
