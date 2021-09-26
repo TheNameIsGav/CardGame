@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CardScript : MonoBehaviour
 {
-    Vector3 offset;
     bool shouldFollow = false;
     // Start is called before the first frame update
     void Start()
@@ -17,23 +16,25 @@ public class CardScript : MonoBehaviour
     {
         if (shouldFollow)
         {
-            transform.position = (Input.mousePosition - offset) * .01f;
-            transform.position = new Vector3(transform.position.x, transform.position.y, -1);
-        } else
-        {
-            transform.position = new Vector3(transform.position.x, transform.position.y, -.01f);
+            Vector3 tmp = Input.mousePosition;
+            tmp = Camera.main.ScreenToWorldPoint(new Vector3(tmp.x, tmp.y, Camera.main.nearClipPlane));
+            transform.position = new Vector3(tmp.x, tmp.y, -2);
+            GameManager.instance.updateGrabbedCard(this.gameObject);
         }
     }
 
     private void OnMouseDown()
     {
         shouldFollow = true;
-        offset = Input.mousePosition - transform.position;
-
+        transform.localScale = new Vector3(.8f, .8f, 1);
+        GameManager.instance.setGrabbedCard(this.gameObject);
     }
 
     private void OnMouseUp()
     {
         shouldFollow = false;
+        transform.localScale = new Vector3(1, 1, 1);
+        GameManager.instance.removeGrabbedCard();
     }
+
 }

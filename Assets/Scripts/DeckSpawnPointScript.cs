@@ -7,6 +7,7 @@ public class DeckSpawnPointScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameManager.instance.ResetGame();
         GameManager.instance.SpawnDeck(transform.position);
     }
 
