@@ -259,26 +259,21 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Any card may be placed on top of the next card at its left, or the third
-    card at its left, if the cards are of the same suit or of the same rank.
+  m_Text: 'A card may be placed on the card directly to it''s left or the card three
+    spaces to its left if either both cards have the same suit, or if both cards
+    have the same rank.
 
-    
 
-    Example:
-    Four cards, from left to right, are: 6 hearts, J hearts, 9 clubs, 9 hearts. The
-    9 hearts may be placed either on the 9 clubs or on the 6 hearts. It may not be
-    played on the jack of the same suit because the jack is not to the immediate
-    left, or third from the left.
 
-    
+    Example: Four cards, from left to right, are: 6 hearts,
+    J hearts, 9 clubs, 9 hearts. The 9 hearts may be placed either on the 9 clubs
+    or on the 6 hearts. It may not be played on the jack of the same suit because
+    the jack is not to the immediate left, or third from the left.
 
-    When the movement of one or more cards
-    has formed a pile, the entire pile is moved with the top card.
 
-    
 
-    It
-    is not obligatory to make a particular move if the player prefers not to do so.'
+    It is not
+    obligatory to make a particular move if the player prefers not to do so.'
 --- !u!222 &512780822
 CanvasRenderer:
   m_ObjectHideFlags: 0
