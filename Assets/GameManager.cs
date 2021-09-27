@@ -290,31 +290,27 @@ public class GameManager : MonoBehaviour
 
     private void CheckGameLogic(GameObject a, GameObject b)
     {
+        Card grabbed = AssocCard(a);
+        Card targeted = AssocCard(b);
+
+        int PosOfA = FindInDeck(boardDeck.deck, grabbed);
+        int PosOfB = FindInDeck(boardDeck.deck, targeted);
+
+        if (PosOfA == PosOfB + 3 || PosOfA == PosOfB + 1)
+        {
+            if (grabbed.Rank == targeted.Rank || grabbed.Suit == targeted.Suit)
+            {
+                moves++;
+                boardDeck.deck.Remove(grabbed);
+                boardDeck.deck[PosOfB] = grabbed;
+                GameObject.Destroy(targeted.card);
+            }
+        }
+
         if (drawDeck.deck.Count == 0 && boardDeck.deck.Count == 1)
         {
             playing = false;
             SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
-        } else { 
-            Card grabbed = AssocCard(a);
-            Card targeted = AssocCard(b);
-
-            int PosOfA = FindInDeck(boardDeck.deck, grabbed);
-            int PosOfB = FindInDeck(boardDeck.deck, targeted);
-
-            Debug.Log(PosOfA);
-            Debug.Log(PosOfB);
-
-            if (PosOfA == PosOfB + 3 || PosOfA == PosOfB + 1)
-            {
-                if (grabbed.Rank == targeted.Rank || grabbed.Suit == targeted.Suit)
-                {
-                    moves++;
-                    Debug.Log("Should Remove Card");
-                    boardDeck.deck.Remove(grabbed);
-                    boardDeck.deck[PosOfB] = grabbed;
-                    GameObject.Destroy(targeted.card);
-                }
-            }
         }
     }
 
